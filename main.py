@@ -50,8 +50,15 @@ def main():
         for asteroid in asteroids:
             if asteroid.collides_with(player):
                 log_event("player_hit")
-                print("Game over!")
-                sys.exit()
+                if gamestate.iframes>0:
+                    continue
+                elif gamestate.lives>1:
+                    gamestate.lives-=1
+                    player.position=pygame.Vector2(SCREEN_WIDTH/2,SCREEN_HEIGHT/2)
+                    gamestate.iframes=60
+                else:
+                    print("Game over!")
+                    sys.exit()
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
@@ -63,6 +70,8 @@ def main():
             thing.draw(screen)
         pygame.display.flip()
         dt=clock.tick(60)/1000
+        if gamestate.iframes>0:
+            gamestate.iframes-=1
 
 if __name__ == "__main__":
     main()
