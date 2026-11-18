@@ -19,6 +19,13 @@ class Player(CircleShape):
         self.rotation=0
         self.shoot_timer=0
 
+        self.set_hit_box()
+
+    def set_hit_box(self: "Player"):
+        temp_surface=pygame.Surface((self.radius,self.radius))
+        pygame.draw.polygon(temp_surface,"white",self.triangle(), LINE_WIDTH)
+        self.mask=pygame.mask.from_surface(temp_surface)
+
     # in the Player class
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -61,3 +68,6 @@ class Player(CircleShape):
             self.move(dt)
         if keys[pygame.K_SPACE]:
             self.shoot()
+
+        #reset hitbox incase movement or rotation occurred
+        self.set_hit_box()
