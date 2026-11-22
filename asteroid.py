@@ -8,27 +8,43 @@ from logger import log_event
 
 
 class Asteroid(CircleShape):
-    def __init__(self: "Asteroid", x: float, y: float, radius: float) -> None:
-        super().__init__(x, y, radius)
+    def __init__(self, *groups) -> None:
+        super().__init__(*groups)
 
         self.rotation=0
 
-    def draw(self: "Asteroid", screen: pygame.Surface) -> None:
-        pygame.draw.circle(screen, "white", self.position, self.radius, LINE_WIDTH)
+        self.mask=pygame.mask.Mask((0,0))
+        self.mask_surface=pygame.Surface((0,0), pygame.SRCALPHA)
 
-    def update(self: "Asteroid", dt: float) -> None:
+    def draw(self, screen: pygame.Surface) -> None:
+        # debug for visually testing the collision mask
+        # screen.blit(self.mask_surface, self.rect)
+        pygame.draw.circle(screen, "white", self.rect.center, self.radius, LINE_WIDTH)
+
+    def set_attrs(self, x: float, y: float, radius: float) -> None:
+        super().set_attrs(x,y,radius)
+
+        self.set_hit_mask()
+
+    def set_hit_mask(self):
+        self.mask_surface=pygame.Surface((self.radius*2,self.radius*2), pygame.SRCALPHA)
+        pygame.draw.circle(self.mask_surface, "red", (self.radius,self.radius), self.radius, LINE_WIDTH*3)
+        self.mask=pygame.mask.from_surface(self.mask_surface)
+
+    def update(self, dt: float) -> None:
         self.position+=self.velocity*dt
+        self.rect.center=(round(self.position.x),round(self.position.y))
 
-    def split(self: "Asteroid") -> None:
+    def split(self) -> None:
         self.kill()
         if self.radius<=ASTEROID_MIN_RADIUS:
             return
-        log_event("asteroid_split")
         angle=random.uniform(20,50)
-        new_angle_a=self.velocity.rotate(angle)
-        new_angle_b=self.velocity.rotate(0-angle)
         new_radius=self.radius-ASTEROID_MIN_RADIUS
-        ast_a=Asteroid(self.position.x, self.position.y, new_radius)
-        ast_a.velocity=new_angle_a*1.2
-        ast_b=Asteroid(self.position.x, self.position.y, new_radius)
-        ast_b.velocity=new_angle_b*1.2
+        ast_a=Asteroid()
+        ast_a.set_attrs(self.rect.center[0], self.rect.center[1], new_radius)
+        ast_a.velocity=self.velocity.rotate(angle)*1.2
+        ast_b=Asteroid()
+        ast_b.set_attrs(self.rect.center[0], self.rect.center[1], new_radius)
+        ast_b.velocity=self.velocity.rotate(0-angle)*1.2
+        log_event("asteroid_split",details=f"old velocity: {self.velocity}, new velocities: {ast_a.velocity} {ast_b.velocity}")
