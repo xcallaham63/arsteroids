@@ -51,7 +51,7 @@ def main():
         updatable.update(dt)
 
         # testing player hitbox
-        screen.blit(player.mask_surface, player.rect)
+        # screen.blit(player.mask_surface, player.rect)
 
         # debugging to figure out why my player-asteroid collisions aren't being detected
         mouse_sprite=Mouse_sprite()
