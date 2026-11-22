@@ -32,7 +32,8 @@ class Asteroid(CircleShape):
         self.mask=pygame.mask.from_surface(self.mask_surface)
 
     def update(self, dt: float) -> None:
-        self.rect=self.rect.move((self.velocity*dt).x,(self.velocity*dt).y)
+        self.position+=self.velocity*dt
+        self.rect.center=(round(self.position.x),round(self.position.y))
 
     def split(self) -> None:
         self.kill()

@@ -13,15 +13,18 @@ class CircleShape(pygame.sprite.Sprite):
             super().__init__(*groups)
 
         self.radius: float = 0
+        self.position: pygame.Vector2 = pygame.Vector2(0, 0)
         self.velocity: pygame.Vector2 = pygame.Vector2(0, 0)
         self.image: pygame.Surface = pygame.Surface((0, 0))
         self.rect: pygame.Rect = self.image.get_rect()
 
     def set_attrs(self: "CircleShape", x: float, y: float, radius: float) -> None:
         self.radius = radius
+        self.position.x=x
+        self.position.y=y
         self.rect.width=int(self.radius*2)
         self.rect.height=int(self.radius*2)
-        self.rect.center=(int(x),int(y))
+        self.rect.center=(round(x),round(y))
 
     def draw(self, screen: pygame.Surface) -> None:
         # must override
